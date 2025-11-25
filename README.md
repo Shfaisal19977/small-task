@@ -60,10 +60,7 @@ Build a project management API system with the following features:
    npm install
    ```
 3. Copy `.env.example` to `.env` and configure your database
-4. Generate application key:
-   ```bash
-   php artisan key:generate
-   ```
+
 5. Run migrations:
    ```bash
    php artisan migrate
@@ -73,13 +70,6 @@ Build a project management API system with the following features:
    php artisan serve
    ```
 
-## Testing
-
-Run the test suite using Pest:
-
-```bash
-php artisan test
-```
 
 ## Project Structure
 
@@ -89,4 +79,3 @@ php artisan test
 - `database/migrations/` - Database schema migrations
 - `database/factories/` - Model factories for testing
 - `routes/api.php` - API route definitions
-- `tests/` - Pest test files
