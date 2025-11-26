@@ -49,7 +49,7 @@ Build a project management API system with the following features:
 - `GET /api/tasks/{task}/comments` - List all comments for a task
 - `POST /api/tasks/{task}/comments` - Create a new comment on a task
 - `PUT /api/tasks/{task}/comments/{comment}` - Update a comment
-- `PATCH /api/tasks/{task}/comments/{comment}` - Update a comment (partial)
+- `PATCH /api/tasks/{task}/comments/{comment}` - Update a comment
 - `DELETE /api/tasks/{task}/comments/{comment}` - Delete a comment
 
 ## Technology Stack
