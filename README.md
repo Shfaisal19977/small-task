@@ -14,17 +14,20 @@ Build a project management API system with the following features:
 ### Projects
 - List all projects with their associated tasks and comments
 - Create new projects with validation
+- Update existing projects
 - Projects include: name, description, start date, end date, and status
 
 ### Tasks
 - List all tasks for a specific project
 - Create new tasks within a project
+- Update existing tasks within a project
 - Tasks include: title, details, status, priority, and due date
 - Tasks are automatically associated with their parent project
 
 ### Comments
 - List all comments for a specific task
 - Create new comments on tasks
+- Update existing comments on tasks
 - Delete comments
 - Comments include: comment text and author name
 
@@ -33,14 +36,20 @@ Build a project management API system with the following features:
 ### Projects
 - `GET /api/projects` - List all projects
 - `POST /api/projects` - Create a new project
+- `PUT /api/projects/{project}` - Update a project
+- `PATCH /api/projects/{project}` - Update a project (partial)
 
 ### Tasks
 - `GET /api/projects/{project}/tasks` - List all tasks for a project
 - `POST /api/projects/{project}/tasks` - Create a new task in a project
+- `PUT /api/projects/{project}/tasks/{task}` - Update a task
+- `PATCH /api/projects/{project}/tasks/{task}` - Update a task (partial)
 
 ### Comments
 - `GET /api/tasks/{task}/comments` - List all comments for a task
 - `POST /api/tasks/{task}/comments` - Create a new comment on a task
+- `PUT /api/tasks/{task}/comments/{comment}` - Update a comment
+- `PATCH /api/tasks/{task}/comments/{comment}` - Update a comment (partial)
 - `DELETE /api/tasks/{task}/comments/{comment}` - Delete a comment
 
 ## Technology Stack
@@ -60,7 +69,10 @@ Build a project management API system with the following features:
    npm install
    ```
 3. Copy `.env.example` to `.env` and configure your database
-
+4. Generate application key:
+   ```bash
+   php artisan key:generate
+   ```
 5. Run migrations:
    ```bash
    php artisan migrate
@@ -70,6 +82,13 @@ Build a project management API system with the following features:
    php artisan serve
    ```
 
+## Testing
+
+Run the test suite using Pest:
+
+```bash
+php artisan test
+```
 
 ## Project Structure
 
@@ -79,3 +98,4 @@ Build a project management API system with the following features:
 - `database/migrations/` - Database schema migrations
 - `database/factories/` - Model factories for testing
 - `routes/api.php` - API route definitions
+- `tests/` - Pest test files

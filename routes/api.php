@@ -13,15 +13,21 @@ Route::get('/user', function (Request $request) {
 Route::controller(ProjectController::class)->prefix('projects')->group(function () {
     Route::get('/', 'index');
     Route::post('/', 'store');
+    Route::put('/{project}', 'update');
+    Route::patch('/{project}', 'update');
 
     Route::controller(ProjectTaskController::class)->prefix('{project}/tasks')->group(function () {
         Route::get('/', 'index');
         Route::post('/', 'store');
+        Route::put('/{task}', 'update');
+        Route::patch('/{task}', 'update');
     });
 });
 
 Route::controller(TaskCommentController::class)->prefix('tasks/{task}/comments')->group(function () {
     Route::get('/', 'index');
     Route::post('/', 'store');
+    Route::put('/{comment}', 'update');
+    Route::patch('/{comment}', 'update');
     Route::delete('/{comment}', 'destroy');
 });

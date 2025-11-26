@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreProjectRequest;
+use App\Http\Requests\UpdateProjectRequest;
 use App\Models\Project;
 use Illuminate\Http\JsonResponse;
 
@@ -23,5 +24,12 @@ class ProjectController extends Controller
         $project = Project::query()->create($request->validated());
 
         return response()->json($project, 201);
+    }
+
+    public function update(UpdateProjectRequest $request, Project $project): JsonResponse
+    {
+        $project->update($request->validated());
+
+        return response()->json($project);
     }
 }
