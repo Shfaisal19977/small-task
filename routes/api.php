@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\BookController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\ProjectTaskController;
 use App\Http\Controllers\TaskCommentController;
@@ -9,6 +10,15 @@ use Illuminate\Support\Facades\Route;
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
+
+Route::controller(BookController::class)->prefix('books')->group(function () {
+    Route::get('/', 'index');
+    Route::post('/', 'store');
+    Route::get('/{book}', 'show');
+    Route::put('/{book}', 'update');
+    Route::patch('/{book}', 'update');
+    Route::delete('/{book}', 'destroy');
+});
 
 Route::controller(ProjectController::class)->prefix('projects')->group(function () {
     Route::get('/', 'index');

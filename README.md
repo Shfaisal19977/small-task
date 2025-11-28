@@ -31,6 +31,14 @@ Build a project management API system with the following features:
 - Delete comments
 - Comments include: comment text and author name
 
+### Books
+- List all books
+- Get a single book by ID
+- Create new books with validation
+- Update existing books
+- Delete books
+- Books include: title, author, and publication year (4-digit validation)
+
 ## API Endpoints
 
 ### Projects
@@ -51,6 +59,14 @@ Build a project management API system with the following features:
 - `PUT /api/tasks/{task}/comments/{comment}` - Update a comment
 - `PATCH /api/tasks/{task}/comments/{comment}` - Update a comment
 - `DELETE /api/tasks/{task}/comments/{comment}` - Delete a comment
+
+### Books
+- `GET /api/books` - List all books
+- `POST /api/books` - Create a new book
+- `GET /api/books/{book}` - Get a single book by ID
+- `PUT /api/books/{book}` - Update a book
+- `PATCH /api/books/{book}` - Update a book (partial)
+- `DELETE /api/books/{book}` - Delete a book
 
 ## Technology Stack
 
@@ -92,10 +108,11 @@ php artisan test
 
 ## Project Structure
 
-- `app/Models/` - Eloquent models (Project, Task, Comment)
-- `app/Http/Controllers/` - API controllers
+- `app/Models/` - Eloquent models (Project, Task, Comment, Book)
+- `app/Http/Controllers/` - API controllers (ProjectController, BookController, etc.)
 - `app/Http/Requests/` - Form request validation classes
 - `database/migrations/` - Database schema migrations
 - `database/factories/` - Model factories for testing
 - `routes/api.php` - API route definitions
 - `tests/` - Pest test files
+
