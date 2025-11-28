@@ -7,6 +7,11 @@ use App\Http\Controllers\TaskCommentController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
+const BOOK_ROUTE_PARAM = '/{book}';
+const PROJECT_ROUTE_PARAM = '/{project}';
+const TASK_ROUTE_PARAM = '/{task}';
+const COMMENT_ROUTE_PARAM = '/{comment}';
+
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
@@ -14,30 +19,30 @@ Route::get('/user', function (Request $request) {
 Route::controller(BookController::class)->prefix('books')->group(function () {
     Route::get('/', 'index');
     Route::post('/', 'store');
-    Route::get('/{book}', 'show');
-    Route::put('/{book}', 'update');
-    Route::patch('/{book}', 'update');
-    Route::delete('/{book}', 'destroy');
+    Route::get(BOOK_ROUTE_PARAM, 'show');
+    Route::put(BOOK_ROUTE_PARAM, 'update');
+    Route::patch(BOOK_ROUTE_PARAM, 'update');
+    Route::delete(BOOK_ROUTE_PARAM, 'destroy');
 });
 
 Route::controller(ProjectController::class)->prefix('projects')->group(function () {
     Route::get('/', 'index');
     Route::post('/', 'store');
-    Route::put('/{project}', 'update');
-    Route::patch('/{project}', 'update');
+    Route::put(PROJECT_ROUTE_PARAM, 'update');
+    Route::patch(PROJECT_ROUTE_PARAM, 'update');
 
     Route::controller(ProjectTaskController::class)->prefix('{project}/tasks')->group(function () {
         Route::get('/', 'index');
         Route::post('/', 'store');
-        Route::put('/{task}', 'update');
-        Route::patch('/{task}', 'update');
+        Route::put(TASK_ROUTE_PARAM, 'update');
+        Route::patch(TASK_ROUTE_PARAM, 'update');
     });
 });
 
 Route::controller(TaskCommentController::class)->prefix('tasks/{task}/comments')->group(function () {
     Route::get('/', 'index');
     Route::post('/', 'store');
-    Route::put('/{comment}', 'update');
-    Route::patch('/{comment}', 'update');
-    Route::delete('/{comment}', 'destroy');
+    Route::put(COMMENT_ROUTE_PARAM, 'update');
+    Route::patch(COMMENT_ROUTE_PARAM, 'update');
+    Route::delete(COMMENT_ROUTE_PARAM, 'destroy');
 });
