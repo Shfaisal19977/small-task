@@ -2,12 +2,18 @@
 
 A Laravel-based REST API for managing projects, tasks, and comments. This application provides a hierarchical structure where projects contain tasks, and tasks contain comments.
 
-## Task Overview
+## Overview
 
-Build a project management API system with the following features:
+This is a comprehensive project management API system built with Laravel that enables you to:
+
 - **Projects**: Create and manage projects with details like name, description, dates, and status
 - **Tasks**: Create and manage tasks within projects with priority, status, and due dates
 - **Comments**: Add comments to tasks for collaboration and tracking
+
+The system follows a hierarchical structure where:
+- Projects can have multiple tasks
+- Tasks can have multiple comments
+- All relationships are properly maintained and validated
 
 ## Features
 
@@ -113,7 +119,7 @@ Build a project management API system with the following features:
    ```
 6. Start the development server:
    ```bash
-   php artisan serve/ser
+   php artisan serve
    ```
 
 ## Testing
@@ -134,14 +140,16 @@ php artisan test
 - `routes/api.php` - API route definitions
 - `tests/` - Pest test files
 
+## Additional Features
 
+This application also includes additional API modules:
 
-**Reduce Stock (ReduceStockRequest):**
-- `amount`: required, integer, minimum 1
+### Books API
+A complete CRUD API for managing books with title, author, and publication year validation.
 
-### Reduce Stock Endpoint
-The `POST /api/products/{product}/reduce-stock` endpoint allows you to reduce the product's stock quantity.
-
-
-
+### Products API
+A complete CRUD API for managing products with inventory management capabilities, including:
+- Product creation and management
+- Stock quantity tracking
+- Stock reduction functionality
 
