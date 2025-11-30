@@ -135,12 +135,13 @@ This API includes interactive Swagger/OpenAPI documentation with dark mode. Visi
 (If using `php artisan serve`, use `http://localhost:8000/api/documentation`)
 
 The documentation provides:
-- Modern dark mode UI
+- Modern dark mode UI with enhanced color scheme
 - Interactive API testing interface
-- Complete endpoint documentation with examples
-- Request/response schemas
-- Try-it-out functionality
+- Complete endpoint documentation with detailed examples
+- Request/response schemas with validation rules
+- Try-it-out functionality with pre-filled examples
 - Code samples in multiple languages
+- Enhanced visual design with better contrast and readability
 
 To regenerate the documentation after making changes:
 
@@ -159,7 +160,8 @@ php artisan test
 ## Project Structure
 
 - `app/Models/` - Eloquent models (Project, Task, Comment, Book, Product)
-- `app/Http/Controllers/` - API controllers (ProjectController, BookController, ProductController, etc.)
+- `app/Models/Schemas/` - OpenAPI schema definitions for Swagger documentation
+- `app/Http/Controllers/` - API controllers with OpenAPI annotations (ProjectController, BookController, ProductController, etc.)
 - `app/Http/Requests/` - Form request validation classes
 - `database/migrations/` - Database schema migrations
 - `database/factories/` - Model factories for testing
