@@ -36,6 +36,12 @@ class StoreBookRequest extends FormRequest
     public function messages(): array
     {
         return [
+            'title.required' => 'The title field is required.',
+            'title.string' => 'The title must be a string.',
+            'title.max' => 'The title may not be greater than 255 characters.',
+            'author.required' => 'The author field is required.',
+            'author.string' => 'The author must be a string.',
+            'author.max' => 'The author may not be greater than 255 characters.',
             'publication_year.required' => 'The publication year is required.',
             'publication_year.integer' => 'The publication year must be a number.',
             'publication_year.digits' => 'The publication year must be exactly 4 digits.',

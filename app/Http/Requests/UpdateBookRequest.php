@@ -36,6 +36,10 @@ class UpdateBookRequest extends FormRequest
     public function messages(): array
     {
         return [
+            'title.string' => 'The title must be a string.',
+            'title.max' => 'The title may not be greater than 255 characters.',
+            'author.string' => 'The author must be a string.',
+            'author.max' => 'The author may not be greater than 255 characters.',
             'publication_year.integer' => 'The publication year must be a number.',
             'publication_year.digits' => 'The publication year must be exactly 4 digits.',
             'publication_year.min' => 'The publication year must be at least 1000.',

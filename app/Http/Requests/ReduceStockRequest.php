@@ -25,4 +25,18 @@ class ReduceStockRequest extends FormRequest
             'amount' => ['required', 'integer', 'min:1'],
         ];
     }
+
+    /**
+     * Get custom error messages for validation rules.
+     *
+     * @return array<string, string>
+     */
+    public function messages(): array
+    {
+        return [
+            'amount.required' => 'The amount field is required.',
+            'amount.integer' => 'The amount must be an integer.',
+            'amount.min' => 'The amount must be at least 1.',
+        ];
+    }
 }
