@@ -6,6 +6,8 @@ use App\Http\Requests\StoreBookRequest;
 use App\Http\Requests\UpdateBookRequest;
 use App\Models\Book;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\View\View;
 use OpenApi\Attributes as OA;
 
 #[OA\Tag(
@@ -29,13 +31,17 @@ class BookController extends Controller
             ),
         ]
     )]
-    public function index(): JsonResponse
+    public function index(): JsonResponse|View
     {
         $books = Book::query()
             ->orderBy('created_at', 'desc')
             ->get();
 
-        return response()->json($books);
+        if ($this->wantsJson()) {
+            return response()->json($books);
+        }
+
+        return view('books.index', compact('books'));
     }
 
     #[OA\Get(
@@ -60,9 +66,13 @@ class BookController extends Controller
             new OA\Response(response: 404, description: 'Book not found'),
         ]
     )]
-    public function show(Book $book): JsonResponse
+    public function show(Book $book): JsonResponse|View
     {
-        return response()->json($book);
+        if ($this->wantsJson()) {
+            return response()->json($book);
+        }
+
+        return view('books.show', compact('book'));
     }
 
     #[OA\Post(
@@ -90,11 +100,20 @@ class BookController extends Controller
             new OA\Response(response: 422, description: 'Validation error'),
         ]
     )]
-    public function store(StoreBookRequest $request): JsonResponse
+    public function create(): View
+    {
+        return view('books.create');
+    }
+
+    public function store(StoreBookRequest $request): JsonResponse|RedirectResponse
     {
         $book = Book::query()->create($request->validated());
 
-        return response()->json($book, 201);
+        if ($this->wantsJson()) {
+            return response()->json($book, 201);
+        }
+
+        return redirect()->route('books.index')->with('success', 'Book created successfully.');
     }
 
     #[OA\Put(
@@ -163,11 +182,20 @@ class BookController extends Controller
             new OA\Response(response: 422, description: 'Validation error'),
         ]
     )]
-    public function update(UpdateBookRequest $request, Book $book): JsonResponse
+    public function edit(Book $book): View
+    {
+        return view('books.edit', compact('book'));
+    }
+
+    public function update(UpdateBookRequest $request, Book $book): JsonResponse|RedirectResponse
     {
         $book->update($request->validated());
 
-        return response()->json($book);
+        if ($this->wantsJson()) {
+            return response()->json($book);
+        }
+
+        return redirect()->route('books.index')->with('success', 'Book updated successfully.');
     }
 
     #[OA\Delete(
@@ -196,10 +224,14 @@ class BookController extends Controller
             new OA\Response(response: 404, description: 'Book not found'),
         ]
     )]
-    public function destroy(Book $book): JsonResponse
+    public function destroy(Book $book): JsonResponse|RedirectResponse
     {
         $book->delete();
 
-        return response()->json(['message' => 'Book deleted successfully'], 200);
+        if ($this->wantsJson()) {
+            return response()->json(['message' => 'Book deleted successfully'], 200);
+        }
+
+        return redirect()->route('books.index')->with('success', 'Book deleted successfully.');
     }
 }

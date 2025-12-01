@@ -7,7 +7,9 @@ use App\Http\Requests\UpdateCommentRequest;
 use App\Models\Comment;
 use App\Models\Task;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Response;
+use Illuminate\View\View;
 use OpenApi\Attributes as OA;
 
 #[OA\Tag(
@@ -41,13 +43,18 @@ class TaskCommentController extends Controller
             new OA\Response(response: 404, description: 'Task not found'),
         ]
     )]
-    public function index(Task $task): JsonResponse
+    public function index(Task $task): JsonResponse|View
     {
+        $task->load('project');
         $comments = $task->comments()
             ->latest()
             ->get();
 
-        return response()->json($comments);
+        if ($this->wantsJson()) {
+            return response()->json($comments);
+        }
+
+        return view('comments.index', compact('task', 'comments'));
     }
 
     #[OA\Post(
@@ -84,11 +91,22 @@ class TaskCommentController extends Controller
             new OA\Response(response: 422, description: 'Validation error'),
         ]
     )]
-    public function store(StoreCommentRequest $request, Task $task): JsonResponse
+    public function create(Task $task): View
+    {
+        $task->load('project');
+
+        return view('comments.create', compact('task'));
+    }
+
+    public function store(StoreCommentRequest $request, Task $task): JsonResponse|RedirectResponse
     {
         $comment = $task->comments()->create($request->validated());
 
-        return response()->json($comment, 201);
+        if ($this->wantsJson()) {
+            return response()->json($comment, 201);
+        }
+
+        return redirect()->route('tasks.comments.index', $task)->with('success', 'Comment created successfully.');
     }
 
     #[OA\Put(
@@ -169,13 +187,25 @@ class TaskCommentController extends Controller
             new OA\Response(response: 422, description: 'Validation error'),
         ]
     )]
-    public function update(UpdateCommentRequest $request, Task $task, Comment $comment): JsonResponse
+    public function edit(Task $task, Comment $comment): View
+    {
+        abort_if($comment->task_id !== $task->id, 404);
+        $task->load('project');
+
+        return view('comments.edit', compact('task', 'comment'));
+    }
+
+    public function update(UpdateCommentRequest $request, Task $task, Comment $comment): JsonResponse|RedirectResponse
     {
         abort_if($comment->task_id !== $task->id, 404);
 
         $comment->update($request->validated());
 
-        return response()->json($comment);
+        if ($this->wantsJson()) {
+            return response()->json($comment);
+        }
+
+        return redirect()->route('tasks.comments.index', $task)->with('success', 'Comment updated successfully.');
     }
 
     #[OA\Delete(
@@ -206,12 +236,16 @@ class TaskCommentController extends Controller
             new OA\Response(response: 404, description: 'Task or Comment not found'),
         ]
     )]
-    public function destroy(Task $task, Comment $comment): Response
+    public function destroy(Task $task, Comment $comment): Response|RedirectResponse
     {
         abort_if($comment->task_id !== $task->id, 404);
 
         $comment->delete();
 
-        return response()->noContent();
+        if ($this->wantsJson()) {
+            return response()->noContent();
+        }
+
+        return redirect()->route('tasks.comments.index', $task)->with('success', 'Comment deleted successfully.');
     }
 }

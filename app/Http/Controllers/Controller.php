@@ -15,5 +15,8 @@ use OpenApi\Attributes as OA;
 )]
 abstract class Controller
 {
-    //
+    protected function wantsJson(): bool
+    {
+        return request()->wantsJson() || request()->is('api/*');
+    }
 }

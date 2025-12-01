@@ -6,6 +6,8 @@ use App\Http\Requests\StoreCategoryRequest;
 use App\Http\Requests\UpdateCategoryRequest;
 use App\Models\Category;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\View\View;
 use OpenApi\Attributes as OA;
 
 #[OA\Tag(
@@ -29,13 +31,17 @@ class CategoryController extends Controller
             ),
         ]
     )]
-    public function index(): JsonResponse
+    public function index(): JsonResponse|View
     {
         $categories = Category::query()
             ->orderBy('created_at', 'desc')
             ->get();
 
-        return response()->json($categories);
+        if ($this->wantsJson()) {
+            return response()->json($categories);
+        }
+
+        return view('categories.index', compact('categories'));
     }
 
     #[OA\Post(
@@ -83,11 +89,20 @@ class CategoryController extends Controller
             ),
         ]
     )]
-    public function store(StoreCategoryRequest $request): JsonResponse
+    public function create(): View
+    {
+        return view('categories.create');
+    }
+
+    public function store(StoreCategoryRequest $request): JsonResponse|RedirectResponse
     {
         $category = Category::query()->create($request->validated());
 
-        return response()->json($category, 201);
+        if ($this->wantsJson()) {
+            return response()->json($category, 201);
+        }
+
+        return redirect()->route('categories.index')->with('success', 'Category created successfully.');
     }
 
     #[OA\Get(
@@ -132,9 +147,13 @@ class CategoryController extends Controller
             ),
         ]
     )]
-    public function show(Category $category): JsonResponse
+    public function show(Category $category): JsonResponse|View
     {
-        return response()->json($category);
+        if ($this->wantsJson()) {
+            return response()->json($category);
+        }
+
+        return view('categories.show', compact('category'));
     }
 
     #[OA\Put(
@@ -260,11 +279,20 @@ class CategoryController extends Controller
             ),
         ]
     )]
-    public function update(UpdateCategoryRequest $request, Category $category): JsonResponse
+    public function edit(Category $category): View
+    {
+        return view('categories.edit', compact('category'));
+    }
+
+    public function update(UpdateCategoryRequest $request, Category $category): JsonResponse|RedirectResponse
     {
         $category->update($request->validated());
 
-        return response()->json($category);
+        if ($this->wantsJson()) {
+            return response()->json($category);
+        }
+
+        return redirect()->route('categories.index')->with('success', 'Category updated successfully.');
     }
 
     #[OA\Delete(
@@ -293,10 +321,14 @@ class CategoryController extends Controller
             new OA\Response(response: 404, description: 'Category not found'),
         ]
     )]
-    public function destroy(Category $category): JsonResponse
+    public function destroy(Category $category): JsonResponse|RedirectResponse
     {
         $category->delete();
 
-        return response()->json(['message' => 'Category deleted successfully'], 200);
+        if ($this->wantsJson()) {
+            return response()->json(['message' => 'Category deleted successfully'], 200);
+        }
+
+        return redirect()->route('categories.index')->with('success', 'Category deleted successfully.');
     }
 }

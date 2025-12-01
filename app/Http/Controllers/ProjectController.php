@@ -6,6 +6,8 @@ use App\Http\Requests\StoreProjectRequest;
 use App\Http\Requests\UpdateProjectRequest;
 use App\Models\Project;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\View\View;
 use OpenApi\Attributes as OA;
 
 #[OA\Tag(
@@ -29,14 +31,18 @@ class ProjectController extends Controller
             ),
         ]
     )]
-    public function index(): JsonResponse
+    public function index(): JsonResponse|View
     {
         $projects = Project::query()
             ->with('tasks.comments')
             ->orderBy('created_at', 'desc')
             ->get();
 
-        return response()->json($projects);
+        if ($this->wantsJson()) {
+            return response()->json($projects);
+        }
+
+        return view('projects.index', compact('projects'));
     }
 
     #[OA\Post(
@@ -87,11 +93,31 @@ class ProjectController extends Controller
             ),
         ]
     )]
-    public function store(StoreProjectRequest $request): JsonResponse
+    public function create(): View
+    {
+        return view('projects.create');
+    }
+
+    public function store(StoreProjectRequest $request): JsonResponse|RedirectResponse
     {
         $project = Project::query()->create($request->validated());
 
-        return response()->json($project, 201);
+        if ($this->wantsJson()) {
+            return response()->json($project, 201);
+        }
+
+        return redirect()->route('projects.index')->with('success', 'Project created successfully.');
+    }
+
+    public function show(Project $project): JsonResponse|View
+    {
+        $project->load('tasks.comments');
+
+        if ($this->wantsJson()) {
+            return response()->json($project);
+        }
+
+        return view('projects.show', compact('project'));
     }
 
     #[OA\Put(
@@ -164,10 +190,19 @@ class ProjectController extends Controller
             new OA\Response(response: 422, description: 'Validation error'),
         ]
     )]
-    public function update(UpdateProjectRequest $request, Project $project): JsonResponse
+    public function edit(Project $project): View
+    {
+        return view('projects.edit', compact('project'));
+    }
+
+    public function update(UpdateProjectRequest $request, Project $project): JsonResponse|RedirectResponse
     {
         $project->update($request->validated());
 
-        return response()->json($project);
+        if ($this->wantsJson()) {
+            return response()->json($project);
+        }
+
+        return redirect()->route('projects.index')->with('success', 'Project updated successfully.');
     }
 }

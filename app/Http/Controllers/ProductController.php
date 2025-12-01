@@ -7,6 +7,8 @@ use App\Http\Requests\StoreProductRequest;
 use App\Http\Requests\UpdateProductRequest;
 use App\Models\Product;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\View\View;
 use OpenApi\Attributes as OA;
 
 #[OA\Tag(
@@ -30,13 +32,17 @@ class ProductController extends Controller
             ),
         ]
     )]
-    public function index(): JsonResponse
+    public function index(): JsonResponse|View
     {
         $products = Product::query()
             ->orderBy('created_at', 'desc')
             ->get();
 
-        return response()->json($products);
+        if ($this->wantsJson()) {
+            return response()->json($products);
+        }
+
+        return view('products.index', compact('products'));
     }
 
     #[OA\Post(
@@ -86,11 +92,20 @@ class ProductController extends Controller
             ),
         ]
     )]
-    public function store(StoreProductRequest $request): JsonResponse
+    public function create(): View
+    {
+        return view('products.create');
+    }
+
+    public function store(StoreProductRequest $request): JsonResponse|RedirectResponse
     {
         $product = Product::query()->create($request->validated());
 
-        return response()->json($product, 201);
+        if ($this->wantsJson()) {
+            return response()->json($product, 201);
+        }
+
+        return redirect()->route('products.index')->with('success', 'Product created successfully.');
     }
 
     #[OA\Get(
@@ -136,9 +151,13 @@ class ProductController extends Controller
             ),
         ]
     )]
-    public function show(Product $product): JsonResponse
+    public function show(Product $product): JsonResponse|View
     {
-        return response()->json($product);
+        if ($this->wantsJson()) {
+            return response()->json($product);
+        }
+
+        return view('products.show', compact('product'));
     }
 
     #[OA\Put(
@@ -267,11 +286,20 @@ class ProductController extends Controller
             ),
         ]
     )]
-    public function update(UpdateProductRequest $request, Product $product): JsonResponse
+    public function edit(Product $product): View
+    {
+        return view('products.edit', compact('product'));
+    }
+
+    public function update(UpdateProductRequest $request, Product $product): JsonResponse|RedirectResponse
     {
         $product->update($request->validated());
 
-        return response()->json($product);
+        if ($this->wantsJson()) {
+            return response()->json($product);
+        }
+
+        return redirect()->route('products.index')->with('success', 'Product updated successfully.');
     }
 
     #[OA\Delete(
@@ -300,11 +328,15 @@ class ProductController extends Controller
             new OA\Response(response: 404, description: 'Product not found'),
         ]
     )]
-    public function destroy(Product $product): JsonResponse
+    public function destroy(Product $product): JsonResponse|RedirectResponse
     {
         $product->delete();
 
-        return response()->json(['message' => 'Product deleted successfully'], 200);
+        if ($this->wantsJson()) {
+            return response()->json(['message' => 'Product deleted successfully'], 200);
+        }
+
+        return redirect()->route('products.index')->with('success', 'Product deleted successfully.');
     }
 
     #[OA\Post(
@@ -367,19 +399,27 @@ class ProductController extends Controller
             ),
         ]
     )]
-    public function reduceStock(ReduceStockRequest $request, Product $product): JsonResponse
+    public function reduceStock(ReduceStockRequest $request, Product $product): JsonResponse|RedirectResponse
     {
         $amount = $request->validated()['amount'];
 
         if ($product->quantity < $amount) {
-            return response()->json([
-                'message' => 'Insufficient stock. Available: '.$product->quantity,
-            ], 422);
+            if ($this->wantsJson()) {
+                return response()->json([
+                    'message' => 'Insufficient stock. Available: '.$product->quantity,
+                ], 422);
+            }
+
+            return redirect()->back()->with('error', 'Insufficient stock. Available: '.$product->quantity);
         }
 
         $product->quantity -= $amount;
         $product->save();
 
-        return response()->json($product);
+        if ($this->wantsJson()) {
+            return response()->json($product);
+        }
+
+        return redirect()->route('products.show', $product)->with('success', 'Stock reduced successfully.');
     }
 }

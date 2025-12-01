@@ -7,6 +7,8 @@ use App\Http\Requests\UpdateTaskRequest;
 use App\Models\Project;
 use App\Models\Task;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\View\View;
 use OpenApi\Attributes as OA;
 
 #[OA\Tag(
@@ -40,13 +42,17 @@ class ProjectTaskController extends Controller
             new OA\Response(response: 404, description: 'Project not found'),
         ]
     )]
-    public function index(Project $project): JsonResponse
+    public function index(Project $project): JsonResponse|View
     {
         $tasks = $project->tasks()
             ->latest()
             ->get();
 
-        return response()->json($tasks);
+        if ($this->wantsJson()) {
+            return response()->json($tasks);
+        }
+
+        return view('tasks.index', compact('project', 'tasks'));
     }
 
     #[OA\Post(
@@ -86,11 +92,20 @@ class ProjectTaskController extends Controller
             new OA\Response(response: 422, description: 'Validation error'),
         ]
     )]
-    public function store(StoreTaskRequest $request, Project $project): JsonResponse
+    public function create(Project $project): View
+    {
+        return view('tasks.create', compact('project'));
+    }
+
+    public function store(StoreTaskRequest $request, Project $project): JsonResponse|RedirectResponse
     {
         $task = $project->tasks()->create($request->validated());
 
-        return response()->json($task, 201);
+        if ($this->wantsJson()) {
+            return response()->json($task, 201);
+        }
+
+        return redirect()->route('projects.tasks.index', $project)->with('success', 'Task created successfully.');
     }
 
     #[OA\Put(
@@ -177,12 +192,23 @@ class ProjectTaskController extends Controller
             new OA\Response(response: 422, description: 'Validation error'),
         ]
     )]
-    public function update(UpdateTaskRequest $request, Project $project, Task $task): JsonResponse
+    public function edit(Project $project, Task $task): View
+    {
+        abort_if($task->project_id !== $project->id, 404);
+
+        return view('tasks.edit', compact('project', 'task'));
+    }
+
+    public function update(UpdateTaskRequest $request, Project $project, Task $task): JsonResponse|RedirectResponse
     {
         abort_if($task->project_id !== $project->id, 404);
 
         $task->update($request->validated());
 
-        return response()->json($task);
+        if ($this->wantsJson()) {
+            return response()->json($task);
+        }
+
+        return redirect()->route('projects.tasks.index', $project)->with('success', 'Task updated successfully.');
     }
 }
