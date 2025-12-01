@@ -119,11 +119,6 @@ The system follows a hierarchical structure where:
    ```
 6. **Access the application**
    
-   if you're you're using Laravel Herd, the application is automatically available at: her http:...
-
-
-   ```
-   
    (If using `php artisan serve` instead, it will be at `http://localhost:8000`)
 
 ## API Documentation
@@ -162,22 +157,35 @@ php artisan test
 - `app/Models/` - Eloquent models (Project, Task, Comment, Book, Product)
 - `app/Models/Schemas/` - OpenAPI schema definitions for Swagger documentation
 - `app/Http/Controllers/` - API controllers with OpenAPI annotations (ProjectController, BookController, ProductController, etc.)
-- `app/Http/Requests/` - Form request validation classes
+- `app/Http/Requests/` - Form request validation classes with custom error messages
 - `database/migrations/` - Database schema migrations
 - `database/factories/` - Model factories for testing
 - `routes/api.php` - API route definitions
 - `tests/` - Pest test files
+
+## Validation
+
+All API endpoints use Laravel Form Request classes for validation with custom error messages. The following Form Request classes are included:
+
+- **StoreTaskRequest** / **UpdateTaskRequest** - Validates task data (title, details, status, priority, due_date)
+- **StoreProjectRequest** / **UpdateProjectRequest** - Validates project data (name, description, dates, status)
+- **StoreCommentRequest** / **UpdateCommentRequest** - Validates comment data (comment_text, author)
+- **StoreBookRequest** / **UpdateBookRequest** - Validates book data (title, author, publication_year)
+- **StoreProductRequest** / **UpdateProductRequest** - Validates product data (name, price, quantity, description)
+- **ReduceStockRequest** - Validates stock reduction amount
+
+All validation rules include custom, user-friendly error messages that provide clear feedback when validation fails.
 
 ## Additional Features
 
 This application also includes additional API modules:
 
 ### Books API
-A complete CRUD API for managing books with title, author, and publication year validation.
+A complete CRUD API for managing books with title, author, and publication year validation (4-digit year validation with range 1000-9999).
 
 ### Products API
 A complete CRUD API for managing products with inventory management capabilities, including:
 - Product creation and management
 - Stock quantity tracking
-- Stock reduction functionality
+- Stock reduction functionality with validation
 
